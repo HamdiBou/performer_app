@@ -29,7 +29,6 @@ import '../view/popular_event/popular_event_list.dart';
 import 'app_routes.dart';
 
 class AppPages {
-  static const initialRoute = Routes.homeRoute;
   static List<GetPage> routes = [
     GetPage(name: Routes.homeRoute, page: () => PublicConferencesScreen()),
     GetPage(name: Routes.introRoute, page: () => const IntroScreen()),

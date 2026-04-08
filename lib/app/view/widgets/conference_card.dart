@@ -9,6 +9,7 @@ class ConferenceCard extends StatelessWidget {
   final String description;
   final String state;
   final VoidCallback onTap;
+  final bool isSelected;
 
   const ConferenceCard({
     Key? key,
@@ -17,6 +18,7 @@ class ConferenceCard extends StatelessWidget {
     required this.description,
     required this.state,
     required this.onTap,
+    this.isSelected = false,
   }) : super(key: key);
 
   @override
@@ -29,6 +31,9 @@ class ConferenceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16.h),
+          border: isSelected
+              ? Border.all(color: accentColor, width: 2.h)
+              : null,
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
@@ -79,6 +84,11 @@ class ConferenceCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (isSelected)
+              Padding(
+                padding: EdgeInsets.only(left: 8.w),
+                child: Icon(Icons.check_circle, color: accentColor, size: 24.h),
+              ),
           ],
         ),
       ),

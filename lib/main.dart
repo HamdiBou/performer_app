@@ -4,10 +4,19 @@ import 'package:get/get.dart';
 
 import 'app/data/api_config.dart';
 import 'app/routes/app_pages.dart';
+import 'app/routes/app_routes.dart';
+import 'base/pref_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiConfig.init();
+
+  // Load saved conference URL if user was in a conference
+  String? savedConferenceUrl = await PrefData.getBaseUrl();
+  if (savedConferenceUrl != null && savedConferenceUrl.isNotEmpty) {
+    ApiConfig.setConferenceUrl(savedConferenceUrl);
+  }
+
   runApp(const MyApp());
 }
 
@@ -27,7 +36,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: "/",
+          initialRoute: Routes.homeRoute,
           getPages: AppPages.routes,
         );
       },

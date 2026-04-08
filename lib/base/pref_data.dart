@@ -7,6 +7,8 @@ class PrefData {
   static String inSignIn = "${prefName}isSignIn";
   static String isSelect = "${prefName}isSelect";
   static String baseUrlKey = "${prefName}baseUrl";
+  static String selectedConferenceIdKey = "${prefName}selectedConferenceId";
+  static String selectedConferenceNameKey = "${prefName}selectedConferenceName";
 
   static Future<void> setBaseUrl(String url) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,5 +49,30 @@ class PrefData {
   static setSelectInterest(bool isFav) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(isSelect, isFav);
+  }
+
+  static Future<void> setSelectedConference(
+    String conferenceId,
+    String conferenceName,
+  ) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(selectedConferenceIdKey, conferenceId);
+    await prefs.setString(selectedConferenceNameKey, conferenceName);
+  }
+
+  static Future<String?> getSelectedConferenceId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(selectedConferenceIdKey);
+  }
+
+  static Future<String?> getSelectedConferenceName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(selectedConferenceNameKey);
+  }
+
+  static Future<void> clearSelectedConference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(selectedConferenceIdKey);
+    await prefs.remove(selectedConferenceNameKey);
   }
 }

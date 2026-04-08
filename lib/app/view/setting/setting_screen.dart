@@ -34,68 +34,114 @@ class _SettingScreenState extends State<SettingScreen> {
           () {
             backClick();
           },
-          title: getCustomFont("Settings", 24.sp, Colors.black, 1,
-              fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+          title: getCustomFont(
+            "Settings",
+            24.sp,
+            Colors.black,
+            1,
+            fontWeight: FontWeight.w700,
+            textAlign: TextAlign.center,
+          ),
         ),
         body: SafeArea(
           child: Column(
             children: [
-              getDivider(
-                dividerColor,
-                1.h,
-              ),
+              getDivider(dividerColor, 1.h),
               Expanded(
-                  flex: 1,
-                  child: ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 20.h),
-                    primary: true,
-                    shrinkWrap: true,
-                    children: [
-                      getVerSpace(20.h),
-                      getCustomFont("Account Settings", 16.sp, greyColor, 1,
-                          fontWeight: FontWeight.w500, txtHeight: 1.5.h),
-                      getVerSpace(12.h),
-                      settingContainer(() {
+                flex: 1,
+                child: ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
+                  primary: true,
+                  shrinkWrap: true,
+                  children: [
+                    getVerSpace(20.h),
+                    getCustomFont(
+                      "Account Settings",
+                      16.sp,
+                      greyColor,
+                      1,
+                      fontWeight: FontWeight.w500,
+                      txtHeight: 1.5.h,
+                    ),
+                    getVerSpace(12.h),
+                    settingContainer(
+                      () {
                         Constant.sendToNext(context, Routes.editProfileRoute);
-                      }, "Edit Profile", "edit_profile.svg"),
-                      getVerSpace(20.h),
-                      settingContainer(
-                          () {}, "Change Password", "change_password.svg"),
-                      getVerSpace(30.h),
-                      getCustomFont("Preferences", 16.sp, greyColor, 1,
-                          fontWeight: FontWeight.w500, txtHeight: 1.5.h),
-                      getVerSpace(12.h),
-                      settingContainer(() {
+                      },
+                      "Edit Profile",
+                      "edit_profile.svg",
+                    ),
+                    getVerSpace(20.h),
+                    settingContainer(
+                      () {},
+                      "Change Password",
+                      "change_password.svg",
+                    ),
+                    getVerSpace(30.h),
+                    getCustomFont(
+                      "Preferences",
+                      16.sp,
+                      greyColor,
+                      1,
+                      fontWeight: FontWeight.w500,
+                      txtHeight: 1.5.h,
+                    ),
+                    getVerSpace(12.h),
+                    settingContainer(
+                      () {
                         Constant.sendToNext(
-                            context, Routes.notificationScreenRoute);
-                      }, "Notification", "notification-image.svg"),
-                      getVerSpace(20.h),
-                      settingContainer(() {
+                          context,
+                          Routes.notificationScreenRoute,
+                        );
+                      },
+                      "Notification",
+                      "notification-image.svg",
+                    ),
+                    getVerSpace(20.h),
+                    settingContainer(
+                      () {
                         Constant.sendToNext(context, Routes.myCardScreenRoute);
-                      }, "My Cards", "card.svg"),
-                      getVerSpace(20.h),
-                      settingContainer(() {
+                      },
+                      "My Cards",
+                      "card.svg",
+                    ),
+                    getVerSpace(20.h),
+                    settingContainer(
+                      () {
                         Constant.sendToNext(context, Routes.privacyScreenRoute);
-                      }, "Privacy", "privacy.svg"),
-                      getVerSpace(20.h),
-                      settingContainer(() {
+                      },
+                      "Privacy",
+                      "privacy.svg",
+                    ),
+                    getVerSpace(20.h),
+                    settingContainer(
+                      () {
                         Constant.sendToNext(context, Routes.helpScreenRoute);
-                      }, "Help", "info.svg"),
-                    ],
-                  )),
+                      },
+                      "Help",
+                      "info.svg",
+                    ),
+                  ],
+                ),
+              ),
               getPaddingWidget(
                 EdgeInsets.symmetric(horizontal: 20.h),
                 getButton(
-                    context, accentColor, "Logout", Colors.white, () {
-                  PrefData.setIsSignIn(false);
-                  Constant.sendToNext(
-                      context, Routes.loginRoute);
-                }, 18.sp,
-                    weight: FontWeight.w700,
-                    buttonHeight: 60.h,
-                    borderRadius: BorderRadius.circular(22.h)),
+                  context,
+                  accentColor,
+                  "Logout",
+                  Colors.white,
+                  () {
+                    PrefData.setIsSignIn(false);
+                    Constant.sendToNext(context, Routes.homeRoute);
+                  },
+                  18.sp,
+                  weight: FontWeight.w700,
+                  buttonHeight: 60.h,
+                  borderRadius: BorderRadius.circular(22.h),
+                ),
               ),
-              getVerSpace(30.h)
+              getVerSpace(30.h),
             ],
           ),
         ),

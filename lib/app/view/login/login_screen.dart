@@ -12,6 +12,7 @@ import '../../../base/widget_utils.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../app/data/api_config.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -124,38 +125,67 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (controlller.loginFormKey.currentState!
                                   .validate()) {
                                 try {
-                                  final response = await http.post(
-                                    Uri.parse("${ApiConfig.baseUrl}/login"),
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                    },
-                                    body: json.encode({
-                                      "email": controlller.emailController.text,
-                                      "password":
-                                          controlller.passwordController.text,
-                                    }),
+                                  final loginUrl =
+                                      "${ApiConfig.baseUrl}/auth/login";
+                                  print('🔐 Login Request:');
+                                  print('URL: $loginUrl');
+                                  print(
+                                    'Email: ${controlller.emailController.text}',
                                   );
+
+                                  final response = await http
+                                      .post(
+                                        Uri.parse(loginUrl),
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        body: json.encode({
+                                          "email":
+                                              controlller.emailController.text,
+                                          "password": controlller
+                                              .passwordController
+                                              .text,
+                                        }),
+                                      )
+                                      .timeout(
+                                        const Duration(seconds: 10),
+                                        onTimeout: () {
+                                          print('✗ Login timeout');
+                                          throw Exception('Request timeout');
+                                        },
+                                      );
+
+                                  print(
+                                    '📱 Response Status: ${response.statusCode}',
+                                  );
+                                  print('📱 Response: ${response.body}');
+
                                   if (response.statusCode == 200 ||
                                       response.statusCode == 201) {
+                                    print('✓ Login successful');
                                     await PrefData.setIsSignIn(true);
                                     Constant.sendToNext(
                                       context,
                                       Routes.homeScreenRoute,
                                     );
                                   } else {
+                                    print(
+                                      '✗ Login failed: ${response.statusCode}',
+                                    );
                                     if (mounted) {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            "Login failed: ${response.statusCode}",
+                                            "Login failed: ${response.statusCode} - ${response.body}",
                                           ),
                                         ),
                                       );
                                     }
                                   }
                                 } catch (e) {
+                                  print('✗ Login Error: $e');
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -186,11 +216,85 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Google",
                             Colors.black,
                             () async {
-                              await PrefData.setIsSignIn(true);
-                              Constant.sendToNext(
-                                context,
-                                Routes.homeScreenRoute,
-                              );
+                              try {
+                                final GoogleSignIn googleSignIn =
+                                    GoogleSignIn.instance;
+
+                                // Initialize with both client IDs
+                                await googleSignIn.initialize(
+                                  clientId: ApiConfig.googleClientId,
+                                  serverClientId:
+                                      ApiConfig.googleServerClientId,
+                                );
+
+                                // Get authentication details
+                                final GoogleSignInAuthentication googleAuth =
+                                    await googleUser.authentication;
+
+                                print('🔐 Google Sign-In Request:');
+                                print('ID Token: ${googleAuth.idToken}');
+
+                                final googleLoginUrl =
+                                    "${ApiConfig.baseUrl}/auth/google";
+                                print('URL: $googleLoginUrl');
+
+                                final response = await http
+                                    .post(
+                                      Uri.parse(googleLoginUrl),
+                                      headers: {
+                                        "Content-Type": "application/json",
+                                      },
+                                      body: json.encode({
+                                        "id_token": googleAuth.idToken,
+                                      }),
+                                    )
+                                    .timeout(
+                                      const Duration(seconds: 10),
+                                      onTimeout: () {
+                                        print('✗ Google login timeout');
+                                        throw Exception('Request timeout');
+                                      },
+                                    );
+
+                                print(
+                                  '📱 Response Status: ${response.statusCode}',
+                                );
+                                print('📱 Response: ${response.body}');
+
+                                if (response.statusCode == 200 ||
+                                    response.statusCode == 201) {
+                                  print('✓ Google login successful');
+                                  await PrefData.setIsSignIn(true);
+                                  if (mounted) {
+                                    Constant.sendToNext(
+                                      context,
+                                      Routes.homeScreenRoute,
+                                    );
+                                  }
+                                } else {
+                                  print(
+                                    '✗ Google login failed: ${response.statusCode}',
+                                  );
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          "Google login failed: ${response.statusCode}",
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              } catch (e) {
+                                print('✗ Google Sign-In Error: $e');
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Google Sign-In error: $e"),
+                                    ),
+                                  );
+                                }
+                              }
                             },
                             18.sp,
                             weight: FontWeight.w700,

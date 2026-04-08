@@ -17,7 +17,8 @@ class ConferenceDescriptionScreen extends StatelessWidget {
 
   void _handleEnterPressed(BuildContext context) async {
     await PrefData.setBaseUrl(conference.performerUrl);
-    ApiConfig.setDynamicUrl(conference.performerUrl);
+    await PrefData.setSelectedConference(conference.id, conference.name);
+    ApiConfig.setConferenceUrl(conference.performerUrl);
 
     bool isSignIn = await PrefData.getIsSignIn();
     if (isSignIn) {

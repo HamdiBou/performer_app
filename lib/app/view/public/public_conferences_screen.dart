@@ -65,11 +65,14 @@ class PublicConferencesScreen extends StatelessWidget {
                   itemCount: controller.filteredConferences.length,
                   itemBuilder: (context, index) {
                     final conf = controller.filteredConferences[index];
+                    final isSelected =
+                        controller.selectedConferenceId.value == conf.id;
                     return ConferenceCard(
                       logoUrl: conf.logoUrl,
                       name: conf.name,
                       description: conf.description,
                       state: conf.state,
+                      isSelected: isSelected,
                       onTap: () {
                         Get.to(
                           () => ConferenceDescriptionScreen(conference: conf),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../base/pref_data.dart';
 
 class ConferenceModel {
   final String id;
@@ -31,6 +32,7 @@ class ConferenceModel {
 class ConferenceController extends GetxController {
   var isLoading = true.obs;
   var currentFilter = 'Ongoing'.obs;
+  var selectedConferenceId = Rx<String?>(null);
 
   var allConferences = <ConferenceModel>[].obs;
   var filteredConferences = <ConferenceModel>[].obs;
@@ -38,7 +40,12 @@ class ConferenceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    loadSelectedConference();
     fetchConferences();
+  }
+
+  Future<void> loadSelectedConference() async {
+    selectedConferenceId.value = await PrefData.getSelectedConferenceId();
   }
 
   void fetchConferences() async {
