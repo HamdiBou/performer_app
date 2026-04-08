@@ -1,10 +1,16 @@
 import '../../base/pref_data.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiConfig {
-  // TODO: ADD API KEYS AND URLS HERE
-  static String baseUrl = 'https://192.168.100.212:8000/api';
+  static late String baseUrl;
 
   static Future<void> init() async {
+    // Load environment variables from .env file
+    await dotenv.load();
+
+    // Initialize baseUrl from .env or use default
+    baseUrl = dotenv.env['BASE_URL'] ?? 'https://192.168.100.212:8000/api';
+
     String? storedUrl = await PrefData.getBaseUrl();
     if (storedUrl != null && storedUrl.isNotEmpty) {
       setDynamicUrl(storedUrl);
@@ -19,8 +25,9 @@ class ApiConfig {
     }
   }
 
-  static const String conferencesEndpoint = '/conferences';
-  static const String googleClientId =
-      '908043888724-uua5c2680grj7hic3ghpo661860vo634.apps.googleusercontent.com';
-  static const String microsoftClientId = 'YOUR_MICROSOFT_CLIENT_ID';
+  static String get conferencesEndpoint =>
+      dotenv.env['CONFERENCES_ENDPOINT'] ?? '/conferences';
+  static String get googleClientId => dotenv.env['GOOGLE_CLIENT_ID'] ?? '';
+  static String get microsoftClientId =>
+      dotenv.env['MICROSOFT_CLIENT_ID'] ?? '';
 }
