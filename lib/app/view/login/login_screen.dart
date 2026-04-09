@@ -23,6 +23,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late LoginController controlller;
+  late GoogleSignIn _googleSignIn;
 
   void backClick() {
     Constant.closeApp();
@@ -32,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     controlller = Get.put(LoginController(), permanent: false);
+    _googleSignIn = GoogleSignIn.instance;
   }
 
   @override
@@ -217,17 +219,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             Colors.black,
                             () async {
                               try {
-                                final GoogleSignIn googleSignIn =
-                                    GoogleSignIn.instance;
-
-                                // Initialize with both client IDs
-                                await googleSignIn.initialize(
-                                  clientId: ApiConfig.googleClientId,
-                                  serverClientId:
-                                      ApiConfig.googleServerClientId,
-                                );
-
-                                // Get authentication details
+                                // Sign in and get authentication details
+                                final googleUser = await _googleSignIn
+                                    .authenticate();
                                 final GoogleSignInAuthentication googleAuth =
                                     await googleUser.authentication;
 
