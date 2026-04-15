@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../app/data/api_config.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -24,9 +25,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late LoginController controlller;
   late GoogleSignIn _googleSignIn;
+  bool _googleSignInInitialized = false;
+  static bool _googleSignInInitializing = false;
 
   void backClick() {
-    Constant.closeApp();
+    Get.back();
   }
 
   @override
@@ -34,6 +37,44 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     controlller = Get.put(LoginController(), permanent: false);
     _googleSignIn = GoogleSignIn.instance;
+
+    // Initialize Google Sign-In with credentials from .env
+    _initializeGoogleSignIn();
+  }
+
+  Future<void> _initializeGoogleSignIn() async {
+    // Prevent multiple initialization attempts
+    if (_googleSignInInitializing || _googleSignInInitialized) {
+      return;
+    }
+
+    _googleSignInInitializing = true;
+
+    try {
+      print('🔧 Initializing Google Sign-In...');
+      print('   Client ID: ${dotenv.env['GOOGLE_CLIENT_ID']}');
+      print('   Server Client ID: ${dotenv.env['GOOGLE_SERVER_CLIENT_ID']}');
+
+      await _googleSignIn.initialize(
+        clientId: dotenv.env['GOOGLE_CLIENT_ID'],
+        serverClientId: dotenv.env['GOOGLE_SERVER_CLIENT_ID'],
+      );
+
+      setState(() {
+        _googleSignInInitialized = true;
+      });
+      print('✅ Google Sign-In initialized successfully');
+    } catch (e) {
+      print('❌ Error initializing Google Sign-In: $e');
+      // Still mark as initialized to prevent repeated attempts
+      if (mounted) {
+        setState(() {
+          _googleSignInInitialized = false;
+        });
+      }
+    } finally {
+      _googleSignInInitializing = false;
+    }
   }
 
   @override
@@ -218,6 +259,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Google",
                             Colors.black,
                             () async {
+                              if (!_googleSignInInitialized) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Google Sign-In initializing... Please try again",
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
                               try {
                                 // Sign in and get authentication details
                                 final googleUser = await _googleSignIn
