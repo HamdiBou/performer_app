@@ -23,7 +23,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late LoginController controlller;
+  late LoginController controller;
   late GoogleSignIn _googleSignIn;
   bool _googleSignInInitialized = false;
   static bool _googleSignInInitializing = false;
@@ -35,18 +35,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    controlller = Get.put(LoginController(), permanent: false);
+    controller = Get.put(LoginController(), permanent: false);
     _googleSignIn = GoogleSignIn.instance;
-
-    // Initialize Google Sign-In with credentials from .env
     _initializeGoogleSignIn();
   }
 
   Future<void> _initializeGoogleSignIn() async {
-    // Prevent multiple initialization attempts
-    if (_googleSignInInitializing || _googleSignInInitialized) {
-      return;
-    }
+    if (_googleSignInInitializing || _googleSignInInitialized) return;
 
     _googleSignInInitializing = true;
 
@@ -60,13 +55,14 @@ class _LoginScreenState extends State<LoginScreen> {
         serverClientId: dotenv.env['GOOGLE_SERVER_CLIENT_ID'],
       );
 
-      setState(() {
-        _googleSignInInitialized = true;
-      });
+      if (mounted) {
+        setState(() {
+          _googleSignInInitialized = true;
+        });
+      }
       print('✅ Google Sign-In initialized successfully');
     } catch (e) {
       print('❌ Error initializing Google Sign-In: $e');
-      // Still mark as initialized to prevent repeated attempts
       if (mounted) {
         setState(() {
           _googleSignInInitialized = false;
@@ -86,7 +82,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     setStatusBarColor(Colors.white);
-    return WillPopScope(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) backClick();
+      },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
@@ -126,16 +126,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(34.h),
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
-                        color: "#2B9CC3C6".toColor(),
+                        color: Color(0x2B9CC3C6),
                         blurRadius: 24,
-                        offset: const Offset(0, -2),
+                        offset: Offset(0, -2),
                       ),
                     ],
                   ),
                   child: Form(
-                    key: controlller.loginFormKey,
+                    key: controller.loginFormKey,
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -145,18 +145,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           getDefaultTextFiledWithLabel(
                             context,
                             "Email",
-                            controlller.emailController,
-                            validator: (value) =>
-                                controlller.emailvalidator(value),
+                            controller.emailController,
+                            validator: controller.emailValidator,
                           ),
                           getVerSpace(24.h),
                           getDefaultTextFiledWithLabel(
                             context,
                             "Password",
-                            controlller.passwordController,
+                            controller.passwordController,
                             isPass: true,
-                            validator: (value) =>
-                                controlller.passwordvalidator(value),
+                            validator: controller.passwordValidator,
                           ),
                           getVerSpace(40.h),
                           getButton(
@@ -165,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Login",
                             Colors.white,
                             () async {
-                              if (controlller.loginFormKey.currentState!
+                              if (controller.loginFormKey.currentState!
                                   .validate()) {
                                 try {
                                   final loginUrl =
@@ -173,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   print('🔐 Login Request:');
                                   print('URL: $loginUrl');
                                   print(
-                                    'Email: ${controlller.emailController.text}',
+                                    'Email: ${controller.emailController.text}',
                                   );
 
                                   final response = await http
@@ -184,8 +182,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         },
                                         body: json.encode({
                                           "email":
-                                              controlller.emailController.text,
-                                          "password": controlller
+                                              controller.emailController.text,
+                                          "password": controller
                                               .passwordController
                                               .text,
                                         }),
@@ -207,10 +205,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                       response.statusCode == 201) {
                                     print('✓ Login successful');
                                     await PrefData.setIsSignIn(true);
-                                    Constant.sendToNext(
-                                      context,
-                                      Routes.homeScreenRoute,
-                                    );
+                                    if (mounted) {
+                                      Constant.sendToNext(
+                                        context,
+                                        Routes.homeRoute,
+                                      );
+                                    }
                                   } else {
                                     print(
                                       '✗ Login failed: ${response.statusCode}',
@@ -270,11 +270,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 return;
                               }
                               try {
-                                // Sign in and get authentication details
                                 final googleUser = await _googleSignIn
                                     .authenticate();
-                                final GoogleSignInAuthentication googleAuth =
-                                    await googleUser.authentication;
+                                final googleAuth = googleUser.authentication;
 
                                 print('🔐 Google Sign-In Request:');
                                 print('ID Token: ${googleAuth.idToken}');
@@ -313,7 +311,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (mounted) {
                                     Constant.sendToNext(
                                       context,
-                                      Routes.homeScreenRoute,
+                                      Routes.homeRoute,
                                     );
                                   }
                                 } else {
@@ -347,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(22.h),
                             isBorder: true,
                             image: "google.svg",
-                            isIcon: false,
+                            isIcon: true,
                             borderColor: Colors.grey,
                           ),
                           getVerSpace(40.h),
@@ -361,10 +359,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      onWillPop: () async {
-        backClick();
-        return false;
-      },
     );
   }
 }

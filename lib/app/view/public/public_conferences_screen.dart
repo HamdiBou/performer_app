@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import '../../controller/conference_controller.dart';
 import '../widgets/state_filter_tabs.dart';
 import '../widgets/conference_card.dart';
@@ -12,6 +13,18 @@ class PublicConferencesScreen extends StatelessWidget {
   PublicConferencesScreen({Key? key}) : super(key: key);
 
   final ConferenceController controller = Get.put(ConferenceController());
+
+  Future<void> _navigateToDemoConference(BuildContext context) async {
+    final demoConference = await ConferenceController.loadDemoConference();
+    if (!context.mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            ConferenceDescriptionScreen(conference: demoConference),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +48,20 @@ class PublicConferencesScreen extends StatelessWidget {
         child: Column(
           children: [
             getDivider(dividerColor, 1.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              child: getButton(
+                context,
+                Colors.orange,
+                "Demo Conference",
+                Colors.white,
+                () => _navigateToDemoConference(context),
+                16.sp,
+                weight: FontWeight.w700,
+                buttonHeight: 48.h,
+                borderRadius: BorderRadius.circular(16.h),
+              ),
+            ),
             Obx(
               () => StateFilterTabs(
                 filters: const ['Ongoing', 'Upcoming', 'Past'],
@@ -74,8 +101,12 @@ class PublicConferencesScreen extends StatelessWidget {
                       state: conf.state,
                       isSelected: isSelected,
                       onTap: () {
-                        Get.to(
-                          () => ConferenceDescriptionScreen(conference: conf),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ConferenceDescriptionScreen(conference: conf),
+                          ),
                         );
                       },
                     );
@@ -88,4 +119,10 @@ class PublicConferencesScreen extends StatelessWidget {
       ),
     );
   }
+
+  // Using Riverpod for Guest Auth logic:
+  // await ref.read(authProvider.notifier).loginAsGuest();
+
+  // Navigate with GetX
+  // Get.toNamed(Routes.conferenceDashboardRoute);
 }

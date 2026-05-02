@@ -26,7 +26,7 @@ Widget getAssetImage(
   );
 }
 
-initializeScreenSize(
+void initializeScreenSize(
   BuildContext context, {
   double width = 414,
   double height = 896,
@@ -55,7 +55,9 @@ Widget getSvgImage(
 }) {
   return SvgPicture.asset(
     Constant.assetImagePath + image,
-    color: color,
+    colorFilter: color != null
+        ? ColorFilter.mode(color, BlendMode.srcIn)
+        : null,
     width: width,
     height: height,
     fit: boxFit,
@@ -153,7 +155,7 @@ Widget getButton(
   Color bgColor,
   String text,
   Color textColor,
-  Function function,
+  VoidCallback onTap,
   double fontsize, {
   bool isBorder = false,
   EdgeInsetsGeometry? insetsGeometry,
@@ -173,9 +175,7 @@ Widget getButton(
   double? borderWidth,
 }) {
   return InkWell(
-    onTap: () {
-      function();
-    },
+    onTap: onTap,
     child: Container(
       margin: insetsGeometry,
       padding: insetsGeometrypadding,
@@ -227,7 +227,7 @@ Widget getDefaultTextFiledWithLabel(
   Widget? prefix,
   double? height,
   String? suffiximage,
-  Function? imagefunction,
+  VoidCallback? onSuffixTap,
   List<TextInputFormatter>? inputFormatters,
   FormFieldValidator<String>? validator,
   BoxConstraints? constraint,
@@ -306,9 +306,7 @@ Widget getDefaultTextFiledWithLabel(
           suffixIconConstraints: BoxConstraints(maxHeight: 24.h),
           suffixIcon: withSufix == true
               ? GestureDetector(
-                  onTap: () {
-                    imagefunction;
-                  },
+                  onTap: onSuffixTap,
                   child: getPaddingWidget(
                     EdgeInsets.only(right: 18.h),
                     getSvgImage(
@@ -347,13 +345,12 @@ Widget getCountryTextField(
   bool isEnable = true,
   double? height,
   String? image,
-  required Function function,
-  Function? imagefunction,
+  required VoidCallback onTap,
 }) {
-  FocusNode myFocusNode = FocusNode();
-  Color color = borderColor;
+  final FocusNode myFocusNode = FocusNode();
   return StatefulBuilder(
     builder: (context, setState) {
+      var color = borderColor;
       return AbsorbPointer(
         absorbing: isEnable,
         child: Focus(
@@ -404,9 +401,7 @@ Widget getCountryTextField(
                     focusNode: myFocusNode,
                     obscureText: isPass,
                     showCursor: false,
-                    onTap: () {
-                      function();
-                    },
+                    onTap: onTap,
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w500,
@@ -475,7 +470,7 @@ Widget getRichText(
   );
 }
 
-AppBar getToolBar(Function function, {Widget? title, bool leading = true}) {
+AppBar getToolBar(VoidCallback onTap, {Widget? title, bool leading = true}) {
   return AppBar(
     toolbarHeight: 73.h,
     title: title,
@@ -486,9 +481,7 @@ AppBar getToolBar(Function function, {Widget? title, bool leading = true}) {
         ? getPaddingWidget(
             EdgeInsets.only(top: 26.h, bottom: 23.h),
             GestureDetector(
-              onTap: () {
-                function();
-              },
+              onTap: onTap,
               child: getSvgImage("arrow_back.svg", height: 24.h, width: 24.h),
             ),
           )
@@ -497,7 +490,7 @@ AppBar getToolBar(Function function, {Widget? title, bool leading = true}) {
 }
 
 AppBar getToolBarWithIcon(
-  Function function, {
+  VoidCallback onTap, {
   Widget? title,
   List<Widget>? action,
   Widget? leading,
@@ -513,11 +506,9 @@ AppBar getToolBarWithIcon(
   );
 }
 
-Widget settingContainer(Function function, String title, String image) {
+Widget settingContainer(VoidCallback onTap, String title, String image) {
   return GestureDetector(
-    onTap: () {
-      function();
-    },
+    onTap: onTap,
     child: Container(
       decoration: BoxDecoration(
         color: Colors.white,

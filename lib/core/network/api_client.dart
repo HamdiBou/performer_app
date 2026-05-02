@@ -1,23 +1,19 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../features/conference/domain/providers/conference_provider.dart';
+import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class ApiClient {
-  final String baseUrl;
+  final Dio _dio;
 
-  ApiClient({required this.baseUrl});
+  ApiClient(this._dio);
 
-  Future<dynamic> get(String endpoint) async {
-    // TODO: Implement HTTP GET (e.g., using dio or http package)
-    print('GET $baseUrl$endpoint');
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
+    return await _dio.get(path, queryParameters: queryParameters);
   }
 
-  // TODO: Add post, put, delete, etc.
+  Future<Response> post(String path, {dynamic data, Map<String, dynamic>? queryParameters}) async {
+    return await _dio.post(path, data: data, queryParameters: queryParameters);
+  }
+
+  // Add more methods as needed (put, delete, etc.)
 }
-
-final apiClientProvider = Provider<ApiClient>((ref) {
-  final conference = ref.watch(conferenceProvider);
-  // Fallback to a default API URL if no conference is selected yet
-  final baseUrl = conference?.apiUrl ?? 'https://default.api.example.com';
-
-  return ApiClient(baseUrl: baseUrl);
-});

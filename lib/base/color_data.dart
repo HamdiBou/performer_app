@@ -1,26 +1,14 @@
 import 'dart:ui';
 
-Color accentColor = "#46BCC3".toColor();
-Color bgColor = "#F5F9F9".toColor();
-Color greyColor = "#7C8788".toColor();
-Color borderColor = "#BCCCCD".toColor();
-Color dividerColor = "#F1F5F5".toColor();
-Color errorColor = "#DD3333".toColor();
-Color lightGrey = "#FAFAFA".toColor();
-Color lightColor = "#F5F9F9".toColor();
-Color lightAccent = '#F4FAFA'.toColor();
-Color shadowColor = "#2690B7B9".toColor();
-Color darkShadow = "#99000000".toColor();
-Color lightShadow = "#00000000".toColor();
-
-extension ColorExtension on String {
-  toColor() {
-    var hexColor = replaceAll("#", "");
-    if (hexColor.length == 6) {
-      hexColor = "FF$hexColor";
-    }
-    if (hexColor.length == 8) {
-      return Color(int.parse("0x$hexColor"));
-    }
-  }
-}
+const Color accentColor = Color(0xFF46BCC3);
+const Color bgColor = Color(0xFFF5F9F9);
+const Color greyColor = Color(0xFF7C8788);
+const Color borderColor = Color(0xFFBCCCCD);
+const Color dividerColor = Color(0xFFF1F5F5);
+const Color errorColor = Color(0xFFDD3333);
+const Color lightGrey = Color(0xFFFAFAFA);
+const Color lightColor = Color(0xFFF5F9F9);
+const Color lightAccent = Color(0xFFF4FAFA);
+const Color shadowColor = Color(0x2690B7B9);
+const Color darkShadow = Color(0x99000000);
+const Color lightShadow = Color(0x00000000);

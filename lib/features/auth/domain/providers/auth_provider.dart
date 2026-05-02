@@ -14,6 +14,12 @@ class AuthNotifier extends Notifier<AuthState> {
     state = AuthState.authenticated;
   }
 
+  Future<void> loginAsGuest() async {
+    // Guest authentication for demo conference
+    // In a real app, this might fetch a guest token from the backend
+    state = AuthState.authenticated;
+  }
+
   void logout() {
     state = AuthState.unauthenticated;
   }

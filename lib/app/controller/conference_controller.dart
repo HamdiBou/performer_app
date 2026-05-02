@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../base/pref_data.dart';
+import '../../../../features/conferences/domain/entities/conference.dart';
 
 class ConferenceModel {
   final String id;
@@ -10,10 +11,11 @@ class ConferenceModel {
   final String logoUrl;
   final String websiteUrl;
   final String performerUrl;
-  final String state; // Ongoing, Upcoming, Past
+  final String state;
   final String date;
   final String time;
   final String location;
+  final bool isDemo;
 
   ConferenceModel({
     required this.id,
@@ -26,16 +28,47 @@ class ConferenceModel {
     required this.date,
     required this.time,
     required this.location,
+    this.isDemo = false,
   });
+
+  factory ConferenceModel.fromJson(Map<String, dynamic> json) {
+    return ConferenceModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      logoUrl: json['logo_url'] ?? '',
+      websiteUrl: json['website_url'] ?? '',
+      performerUrl: json['performer_url'] ?? '',
+      state: json['state'] ?? 'Ongoing',
+      date: json['date'] ?? 'TBD',
+      time: json['time'] ?? 'TBD',
+      location: json['location'] ?? 'TBD',
+      isDemo: json['is_demo'] ?? false,
+    );
+  }
+
+  Conference toEntity() {
+    return Conference(
+      id: id,
+      name: name,
+      logoUrl: logoUrl,
+      location: location,
+      startDate: DateTime.now(),
+      endDate: DateTime.now().add(const Duration(days: 3)),
+      description: description,
+      isDemo: isDemo,
+    );
+  }
 }
 
 class ConferenceController extends GetxController {
-  var isLoading = true.obs;
-  var currentFilter = 'Ongoing'.obs;
-  var selectedConferenceId = Rx<String?>(null);
+  final RxBool isLoading = true.obs;
+  final RxString currentFilter = 'Ongoing'.obs;
+  final Rx<String?> selectedConferenceId = Rx<String?>(null);
+  final RxString errorMessage = ''.obs;
 
-  var allConferences = <ConferenceModel>[].obs;
-  var filteredConferences = <ConferenceModel>[].obs;
+  final RxList<ConferenceModel> allConferences = <ConferenceModel>[].obs;
+  final RxList<ConferenceModel> filteredConferences = <ConferenceModel>[].obs;
 
   @override
   void onInit() {
@@ -48,8 +81,9 @@ class ConferenceController extends GetxController {
     selectedConferenceId.value = await PrefData.getSelectedConferenceId();
   }
 
-  void fetchConferences() async {
+  Future<void> fetchConferences() async {
     isLoading.value = true;
+    errorMessage.value = '';
 
     try {
       final String response = await rootBundle.loadString(
@@ -57,26 +91,16 @@ class ConferenceController extends GetxController {
       );
       final List<dynamic> data = json.decode(response);
 
-      allConferences.value = data.map((json) {
-        return ConferenceModel(
-          id: json['id'] ?? '',
-          name: json['name'] ?? '',
-          description: json['description'] ?? '',
-          logoUrl: json['logo_url'] ?? '',
-          websiteUrl: json['website_url'] ?? '',
-          performerUrl: json['performer_url'] ?? '',
-          state: json['state'] ?? 'Ongoing', // Fallback as it's missing in json
-          date: json['date'] ?? 'TBD',
-          time: json['time'] ?? 'TBD',
-          location: json['location'] ?? 'TBD',
-        );
-      }).toList();
+      allConferences.value = data
+          .map((json) => ConferenceModel.fromJson(json))
+          .toList();
     } catch (e) {
+      errorMessage.value = 'Failed to load conferences: $e';
       allConferences.value = [];
+    } finally {
+      applyFilter(currentFilter.value);
+      isLoading.value = false;
     }
-
-    applyFilter(currentFilter.value);
-    isLoading.value = false;
   }
 
   void applyFilter(String filter) {
@@ -84,5 +108,13 @@ class ConferenceController extends GetxController {
     filteredConferences.value = allConferences
         .where((conf) => conf.state == filter)
         .toList();
+  }
+
+  static Future<ConferenceModel> loadDemoConference() async {
+    final String response = await rootBundle.loadString(
+      'assets/data/demo_conference.json',
+    );
+    final Map<String, dynamic> data = json.decode(response);
+    return ConferenceModel.fromJson(data);
   }
 }

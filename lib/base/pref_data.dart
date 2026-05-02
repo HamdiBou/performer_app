@@ -1,7 +1,9 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PrefData {
   static String prefName = "com.example.event_app";
+  static const _secureStorage = FlutterSecureStorage();
 
   static String isIntro = "${prefName}isIntro";
   static String inSignIn = "${prefName}isSignIn";
@@ -9,6 +11,31 @@ class PrefData {
   static String baseUrlKey = "${prefName}baseUrl";
   static String selectedConferenceIdKey = "${prefName}selectedConferenceId";
   static String selectedConferenceNameKey = "${prefName}selectedConferenceName";
+  static String authTokenKey = "${prefName}authToken";
+  static String userKey = "${prefName}user";
+
+  static Future<void> setAuthToken(String token) async {
+    await _secureStorage.write(key: authTokenKey, value: token);
+  }
+
+  static Future<String?> getAuthToken() async {
+    return await _secureStorage.read(key: authTokenKey);
+  }
+
+  static Future<void> setUser(String userJson) async {
+    await _secureStorage.write(key: userKey, value: userJson);
+  }
+
+  static Future<String?> getUser() async {
+    return await _secureStorage.read(key: userKey);
+  }
+
+  static Future<void> clearAuth() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await _secureStorage.delete(key: authTokenKey);
+    await _secureStorage.delete(key: userKey);
+    await prefs.setBool(inSignIn, false);
+  }
 
   static Future<void> setBaseUrl(String url) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

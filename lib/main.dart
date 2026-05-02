@@ -1,43 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 
-import 'app/data/api_config.dart';
-import 'app/routes/app_pages.dart';
-import 'app/routes/app_routes.dart';
-import 'base/pref_data.dart';
+import 'core/di/injection.dart';
+import 'core/routing/app_router.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/conferences/presentation/bloc/conference_bloc.dart';
+import 'features/conference_shell/presentation/bloc/shell_bloc.dart';
+import 'features/certificate/presentation/bloc/certificate_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ApiConfig.init();
 
-  // Load saved conference URL if user was in a conference
-  String? savedConferenceUrl = await PrefData.getBaseUrl();
-  if (savedConferenceUrl != null && savedConferenceUrl.isNotEmpty) {
-    ApiConfig.setConferenceUrl(savedConferenceUrl);
-  }
+  configureDependencies();
 
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) => getIt<AuthBloc>()..add(AppStarted()),
+        ),
+        BlocProvider<ConferenceBloc>(
+          create: (context) =>
+              getIt<ConferenceBloc>()..add(LoadSelectedConference()),
+        ),
+        BlocProvider<ShellBloc>(create: (context) => getIt<ShellBloc>()),
+        BlocProvider<CertificateBloc>(
+          create: (context) => getIt<CertificateBloc>(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(414, 896),
       minTextAdapt: true,
       builder: (context, child) {
-        return GetMaterialApp(
+        return MaterialApp.router(
           debugShowCheckedModeBanner: false,
-          initialRoute: Routes.homeRoute,
-          getPages: AppPages.routes,
+          routerConfig: getIt<AppRouter>().router,
         );
       },
     );

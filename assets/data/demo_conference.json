@@ -1,0 +1,13 @@
+{
+  "id": "demo",
+  "name": "Demo Conference 2026",
+  "description": "This is a demo conference showcasing the features of the Event App. Explore sessions, speakers, sponsors, and interactive maps in a fully functional conference environment.",
+  "logo_url": "https://dummyimage.com/256x256/46BCC3/ffffff.png?text=DEMO",
+  "website_url": "https://demo.eventapp.com",
+  "performer_url": "https://demo.eventapp.com",
+  "state": "Ongoing",
+  "date": "May 15-17, 2026",
+  "time": "9:00 AM - 6:00 PM",
+  "location": "Virtual Event",
+  "is_demo": true
+}

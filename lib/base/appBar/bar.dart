@@ -562,7 +562,7 @@ class ConvexAppBarState extends State<ConvexAppBar>
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: "#2B9CC3C6".toColor(),
+                color: const Color(0x2B9CC3C6),
                 blurRadius: 24,
                 offset: const Offset(0, -2),
               ),
@@ -578,7 +578,7 @@ class ConvexAppBarState extends State<ConvexAppBar>
               sigma: widget.elevation ?? ELEVATION,
               leftPercent: percent,
               textDirection: textDirection,
-              shadowColor: "#21857F97".toColor(),
+              shadowColor: const Color(0x21857F97),
               cornerRadius: widget.cornerRadius,
             ),
           ),

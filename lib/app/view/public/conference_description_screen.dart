@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_login/features/conferences/presentation/bloc/conference_bloc.dart';
+import 'package:test_login/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:test_login/features/conferences/domain/entities/conference.dart';
 import '../../controller/conference_controller.dart';
 import '../../../base/color_data.dart';
 import '../../../base/pref_data.dart';
@@ -16,16 +21,40 @@ class ConferenceDescriptionScreen extends StatelessWidget {
     : super(key: key);
 
   void _handleEnterPressed(BuildContext context) async {
+    if (conference.isDemo || conference.id == 'demo') {
+      context.read<ConferenceBloc>().add(
+        ConferenceEvent.selectConference(conference.toEntity()),
+      );
+
+      await context.read<ConferenceBloc>().stream.firstWhere(
+        (state) => state is ConferenceLoaded && state.selected != null,
+      );
+
+      if (!context.mounted) return;
+      context.go('/');
+      return;
+    }
+
+    final authState = context.read<AuthBloc>().state;
+    final isAuth = authState.maybeWhen(
+      authenticated: (_) => true,
+      orElse: () => false,
+    );
+
+    if (!isAuth) {
+      context.go('/login');
+      return;
+    }
+
     await PrefData.setBaseUrl(conference.performerUrl);
     await PrefData.setSelectedConference(conference.id, conference.name);
-    ApiConfig.setConferenceUrl(conference.performerUrl);
 
-    bool isSignIn = await PrefData.getIsSignIn();
-    if (isSignIn) {
-      Constant.sendToNext(context, Routes.homeScreenRoute);
-    } else {
-      Constant.sendToNext(context, Routes.loginRoute);
-    }
+    if (!context.mounted) return;
+
+    // Dispatch selection to ConferenceBloc to trigger router update
+    context.read<ConferenceBloc>().add(
+      ConferenceEvent.selectConference(conference.toEntity()),
+    );
   }
 
   @override
@@ -35,7 +64,7 @@ class ConferenceDescriptionScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: getToolBar(
         () {
-          Get.back();
+          context.go('/public');
         },
         title: getCustomFont(
           "Conference Details",

@@ -33,10 +33,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     setStatusBarColor(Colors.white);
-    return WillPopScope(
-      onWillPop: () async {
-        backClick();
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) backClick();
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -82,11 +82,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(34.h),
                         ),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
-                            color: "#2B9CC3C6".toColor(),
+                            color: Color(0x2B9CC3C6),
                             blurRadius: 24,
-                            offset: const Offset(0, -2),
+                            offset: Offset(0, -2),
                           ),
                         ],
                       ),
@@ -110,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               controller.nameController,
                               isEnable: false,
                               height: 60.h,
-                              validator: controller.fullNamevalidator,
+                              validator: controller.fullNameValidator,
                             ),
                             getVerSpace(24.h),
                             getCustomFont(
@@ -127,7 +127,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               controller.emailController,
                               isEnable: false,
                               height: 60.h,
-                              validator: controller.emailvalidator,
+                              validator: controller.emailValidator,
                             ),
                             getVerSpace(24.h),
                             getCustomFont(
@@ -140,51 +140,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             getVerSpace(7.h),
                             GetX<SignUpController>(
                               init: SignUpController(),
-                              builder: (controller) =>
-                                  getDefaultTextFiledWithLabel(
-                                    context,
-                                    "Phone Number",
-                                    controller.phoneController,
-                                    isEnable: false,
-                                    height: 60.h,
-                                    validator: controller.phonevalidator,
-                                    isprefix: true,
-                                    prefix: GestureDetector(
-                                      onTap: () {
-                                        Get.toNamed(Routes.selectCountryRoute);
-                                      },
-                                      child: Row(
-                                        children: [
-                                          getHorSpace(18.h),
-                                          getAssetImage(controller.image.value),
-                                          getHorSpace(12.h),
-                                          getCustomFont(
-                                            controller.code.value,
-                                            16.sp,
-                                            greyColor,
-                                            1,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          getHorSpace(5.h),
-                                          getSvgImage(
-                                            "arrow_down.svg",
-                                            width: 24.h,
-                                            height: 24.h,
-                                          ),
-                                          getHorSpace(5.h),
-                                        ],
+                              builder: (c) => getDefaultTextFiledWithLabel(
+                                context,
+                                "Phone Number",
+                                c.phoneController,
+                                isEnable: false,
+                                height: 60.h,
+                                validator: c.phoneValidator,
+                                isprefix: true,
+                                prefix: GestureDetector(
+                                  onTap: () {
+                                    Get.toNamed(Routes.homeRoute);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      getHorSpace(18.h),
+                                      getAssetImage(c.image.value),
+                                      getHorSpace(12.h),
+                                      getCustomFont(
+                                        c.code.value,
+                                        16.sp,
+                                        greyColor,
+                                        1,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                    ),
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.allow(
-                                        RegExp('[0-9.,]'),
+                                      getHorSpace(5.h),
+                                      getSvgImage(
+                                        "arrow_down.svg",
+                                        width: 24.h,
+                                        height: 24.h,
                                       ),
+                                      getHorSpace(5.h),
                                     ],
-                                    constraint: BoxConstraints(
-                                      maxWidth: 135.h,
-                                      maxHeight: 24.h,
-                                    ),
                                   ),
+                                ),
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp('[0-9.,]'),
+                                  ),
+                                ],
+                                constraint: BoxConstraints(
+                                  maxWidth: 135.h,
+                                  maxHeight: 24.h,
+                                ),
+                              ),
                             ),
                             getVerSpace(24.h),
                             getCustomFont(
@@ -201,7 +200,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               controller.passwordController,
                               isEnable: false,
                               height: 60.h,
-                              validator: controller.passwordvalidator,
+                              validator: controller.passwordValidator,
                               withSufix: true,
                               suffiximage: "show.svg",
                               isPass: true,
@@ -211,8 +210,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               children: [
                                 GetX<SignUpController>(
                                   init: SignUpController(),
-                                  builder: (controller) => GestureDetector(
-                                    child: controller.check.value == true
+                                  builder: (c) => GestureDetector(
+                                    child: c.check.value == true
                                         ? Container(
                                             height: 24.h,
                                             width: 24.h,
@@ -234,7 +233,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             height: 24.h,
                                           ),
                                     onTap: () {
-                                      controller.onCheck();
+                                      c.onCheck();
                                     },
                                   ),
                                 ),
