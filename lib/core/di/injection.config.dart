@@ -60,17 +60,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i95.CertificateRepositoryImpl(),
     );
     gh.lazySingleton<_i92.ApiClient>(() => _i92.ApiClient(gh<_i361.Dio>()));
-    gh.lazySingleton<_i231.ConferenceRepository>(
-      () => _i860.ConferenceRepositoryImpl(),
-    );
     gh.factory<_i561.ShellBloc>(
       () => _i561.ShellBloc(gh<_i309.ConferenceShellRepository>()),
     );
     gh.factory<_i946.CertificateBloc>(
       () => _i946.CertificateBloc(gh<_i199.CertificateRepository>()),
     );
-    gh.factory<_i691.ConferenceBloc>(
-      () => _i691.ConferenceBloc(gh<_i231.ConferenceRepository>()),
+    gh.lazySingleton<_i231.ConferenceRepository>(
+      () => _i860.ConferenceRepositoryImpl(gh<_i92.ApiClient>()),
     );
     gh.lazySingleton<_i706.AuthDataSource>(
       () => _i706.AuthDataSourceImpl(
@@ -83,6 +80,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i685.AuthBloc>(
       () => _i685.AuthBloc(gh<_i526.AuthRepository>()),
+    );
+    gh.factory<_i691.ConferenceBloc>(
+      () => _i691.ConferenceBloc(gh<_i231.ConferenceRepository>()),
     );
     gh.lazySingleton<_i707.AppRouter>(
       () => _i707.AppRouter(gh<_i685.AuthBloc>(), gh<_i691.ConferenceBloc>()),

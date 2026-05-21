@@ -57,8 +57,7 @@ flutter:
   assets:
     - .env
     - assets/images/
-    - assets/data/conferences.json
-    - assets/data/demo_conference.json
+    - assets/data/
   fonts:
     - family: Gilroy
       fonts:

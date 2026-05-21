@@ -55,12 +55,13 @@ extension AuthEventPatterns on AuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( AppStarted value)?  appStarted,TResult Function( SignInWithGoogle value)?  signInWithGoogle,TResult Function( SignOut value)?  signOut,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( AppStarted value)?  appStarted,TResult Function( SignInWithGoogle value)?  signInWithGoogle,TResult Function( SignInWithEmail value)?  signInWithEmail,TResult Function( SignOut value)?  signOut,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case AppStarted() when appStarted != null:
 return appStarted(_that);case SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle(_that);case SignOut() when signOut != null:
+return signInWithGoogle(_that);case SignInWithEmail() when signInWithEmail != null:
+return signInWithEmail(_that);case SignOut() when signOut != null:
 return signOut(_that);case _:
   return orElse();
 
@@ -79,12 +80,13 @@ return signOut(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( AppStarted value)  appStarted,required TResult Function( SignInWithGoogle value)  signInWithGoogle,required TResult Function( SignOut value)  signOut,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( AppStarted value)  appStarted,required TResult Function( SignInWithGoogle value)  signInWithGoogle,required TResult Function( SignInWithEmail value)  signInWithEmail,required TResult Function( SignOut value)  signOut,}){
 final _that = this;
 switch (_that) {
 case AppStarted():
 return appStarted(_that);case SignInWithGoogle():
-return signInWithGoogle(_that);case SignOut():
+return signInWithGoogle(_that);case SignInWithEmail():
+return signInWithEmail(_that);case SignOut():
 return signOut(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -102,12 +104,13 @@ return signOut(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( AppStarted value)?  appStarted,TResult? Function( SignInWithGoogle value)?  signInWithGoogle,TResult? Function( SignOut value)?  signOut,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( AppStarted value)?  appStarted,TResult? Function( SignInWithGoogle value)?  signInWithGoogle,TResult? Function( SignInWithEmail value)?  signInWithEmail,TResult? Function( SignOut value)?  signOut,}){
 final _that = this;
 switch (_that) {
 case AppStarted() when appStarted != null:
 return appStarted(_that);case SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle(_that);case SignOut() when signOut != null:
+return signInWithGoogle(_that);case SignInWithEmail() when signInWithEmail != null:
+return signInWithEmail(_that);case SignOut() when signOut != null:
 return signOut(_that);case _:
   return null;
 
@@ -125,11 +128,12 @@ return signOut(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  appStarted,TResult Function()?  signInWithGoogle,TResult Function()?  signOut,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  appStarted,TResult Function()?  signInWithGoogle,TResult Function( String email,  String password,  String conferenceId)?  signInWithEmail,TResult Function()?  signOut,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case AppStarted() when appStarted != null:
 return appStarted();case SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle();case SignOut() when signOut != null:
+return signInWithGoogle();case SignInWithEmail() when signInWithEmail != null:
+return signInWithEmail(_that.email,_that.password,_that.conferenceId);case SignOut() when signOut != null:
 return signOut();case _:
   return orElse();
 
@@ -148,11 +152,12 @@ return signOut();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  appStarted,required TResult Function()  signInWithGoogle,required TResult Function()  signOut,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  appStarted,required TResult Function()  signInWithGoogle,required TResult Function( String email,  String password,  String conferenceId)  signInWithEmail,required TResult Function()  signOut,}) {final _that = this;
 switch (_that) {
 case AppStarted():
 return appStarted();case SignInWithGoogle():
-return signInWithGoogle();case SignOut():
+return signInWithGoogle();case SignInWithEmail():
+return signInWithEmail(_that.email,_that.password,_that.conferenceId);case SignOut():
 return signOut();case _:
   throw StateError('Unexpected subclass');
 
@@ -170,11 +175,12 @@ return signOut();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  appStarted,TResult? Function()?  signInWithGoogle,TResult? Function()?  signOut,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  appStarted,TResult? Function()?  signInWithGoogle,TResult? Function( String email,  String password,  String conferenceId)?  signInWithEmail,TResult? Function()?  signOut,}) {final _that = this;
 switch (_that) {
 case AppStarted() when appStarted != null:
 return appStarted();case SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle();case SignOut() when signOut != null:
+return signInWithGoogle();case SignInWithEmail() when signInWithEmail != null:
+return signInWithEmail(_that.email,_that.password,_that.conferenceId);case SignOut() when signOut != null:
 return signOut();case _:
   return null;
 
@@ -246,6 +252,76 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class SignInWithEmail implements AuthEvent {
+  const SignInWithEmail({required this.email, required this.password, required this.conferenceId});
+  
+
+ final  String email;
+ final  String password;
+ final  String conferenceId;
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SignInWithEmailCopyWith<SignInWithEmail> get copyWith => _$SignInWithEmailCopyWithImpl<SignInWithEmail>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SignInWithEmail&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.conferenceId, conferenceId) || other.conferenceId == conferenceId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,email,password,conferenceId);
+
+@override
+String toString() {
+  return 'AuthEvent.signInWithEmail(email: $email, password: $password, conferenceId: $conferenceId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SignInWithEmailCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
+  factory $SignInWithEmailCopyWith(SignInWithEmail value, $Res Function(SignInWithEmail) _then) = _$SignInWithEmailCopyWithImpl;
+@useResult
+$Res call({
+ String email, String password, String conferenceId
+});
+
+
+
+
+}
+/// @nodoc
+class _$SignInWithEmailCopyWithImpl<$Res>
+    implements $SignInWithEmailCopyWith<$Res> {
+  _$SignInWithEmailCopyWithImpl(this._self, this._then);
+
+  final SignInWithEmail _self;
+  final $Res Function(SignInWithEmail) _then;
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,Object? conferenceId = null,}) {
+  return _then(SignInWithEmail(
+email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,conferenceId: null == conferenceId ? _self.conferenceId : conferenceId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

@@ -25,6 +25,28 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, User>> signInWithEmail(
+    String email,
+    String password,
+    String conferenceId,
+  ) async {
+    try {
+      final user = await _authDataSource.signInWithEmail(
+        email,
+        password,
+        conferenceId,
+      );
+      if (user != null) {
+        return Right(user);
+      } else {
+        return Left(AuthFailure('Email sign-in failed.'));
+      }
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> signOut() async {
     try {
       await _authDataSource.signOut();

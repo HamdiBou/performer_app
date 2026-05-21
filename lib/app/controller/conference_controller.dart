@@ -1,8 +1,11 @@
-import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
+import 'package:flutter/services.dart';
 import '../../../base/pref_data.dart';
 import '../../../../features/conferences/domain/entities/conference.dart';
+import '../../../../features/conferences/domain/repositories/conference_repository.dart';
+import 'package:test_login/core/di/injection.dart';
+import 'dart:convert';
 
 class ConferenceModel {
   final String id;
@@ -53,15 +56,19 @@ class ConferenceModel {
       name: name,
       logoUrl: logoUrl,
       location: location,
-      startDate: DateTime.now(),
-      endDate: DateTime.now().add(const Duration(days: 3)),
       description: description,
+      websiteUrl: websiteUrl,
+      performerUrl: performerUrl,
+      state: state,
+      date: date,
+      time: time,
       isDemo: isDemo,
     );
   }
 }
 
 class ConferenceController extends GetxController {
+  final ConferenceRepository _repository = getIt<ConferenceRepository>();
   final RxBool isLoading = true.obs;
   final RxString currentFilter = 'Ongoing'.obs;
   final Rx<String?> selectedConferenceId = Rx<String?>(null);
@@ -86,14 +93,32 @@ class ConferenceController extends GetxController {
     errorMessage.value = '';
 
     try {
-      final String response = await rootBundle.loadString(
-        'assets/data/conferences.json',
+      final result = await _repository.getConferences();
+      result.fold(
+        (failure) {
+          errorMessage.value = failure.message;
+          allConferences.value = [];
+        },
+        (conferences) {
+          allConferences.value = conferences
+              .map(
+                (c) => ConferenceModel(
+                  id: c.id,
+                  name: c.name,
+                  description: c.description ?? '',
+                  logoUrl: c.logoUrl,
+                  websiteUrl: c.websiteUrl ?? '',
+                  performerUrl: c.performerUrl ?? '',
+                  state: c.state,
+                  date: c.date ?? 'TBD',
+                  time: c.time ?? 'TBD',
+                  location: c.location,
+                  isDemo: c.isDemo,
+                ),
+              )
+              .toList();
+        },
       );
-      final List<dynamic> data = json.decode(response);
-
-      allConferences.value = data
-          .map((json) => ConferenceModel.fromJson(json))
-          .toList();
     } catch (e) {
       errorMessage.value = 'Failed to load conferences: $e';
       allConferences.value = [];
@@ -106,7 +131,10 @@ class ConferenceController extends GetxController {
   void applyFilter(String filter) {
     currentFilter.value = filter;
     filteredConferences.value = allConferences
-        .where((conf) => conf.state == filter)
+        .where(
+          (conf) =>
+              conf.state.toLowerCase().trim() == filter.toLowerCase().trim(),
+        )
         .toList();
   }
 
@@ -114,7 +142,7 @@ class ConferenceController extends GetxController {
     final String response = await rootBundle.loadString(
       'assets/data/demo_conference.json',
     );
-    final Map<String, dynamic> data = json.decode(response);
+    final data = json.decode(response);
     return ConferenceModel.fromJson(data);
   }
 }

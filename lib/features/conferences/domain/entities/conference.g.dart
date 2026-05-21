@@ -11,9 +11,12 @@ _Conference _$ConferenceFromJson(Map<String, dynamic> json) => _Conference(
   name: json['name'] as String,
   logoUrl: json['logo_url'] as String,
   location: json['location'] as String,
-  startDate: DateTime.parse(json['startDate'] as String),
-  endDate: DateTime.parse(json['endDate'] as String),
   description: json['description'] as String?,
+  websiteUrl: json['website_url'] as String?,
+  performerUrl: json['performer_url'] as String?,
+  state: json['state'] as String? ?? 'Ongoing',
+  date: json['date'] as String?,
+  time: json['time'] as String?,
   isDemo: json['is_demo'] as bool? ?? false,
 );
 
@@ -23,8 +26,11 @@ Map<String, dynamic> _$ConferenceToJson(_Conference instance) =>
       'name': instance.name,
       'logo_url': instance.logoUrl,
       'location': instance.location,
-      'startDate': instance.startDate.toIso8601String(),
-      'endDate': instance.endDate.toIso8601String(),
       'description': instance.description,
+      'website_url': instance.websiteUrl,
+      'performer_url': instance.performerUrl,
+      'state': instance.state,
+      'date': instance.date,
+      'time': instance.time,
       'is_demo': instance.isDemo,
     };

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Conference {
 
- String get id; String get name;@JsonKey(name: 'logo_url') String get logoUrl; String get location; DateTime get startDate; DateTime get endDate; String? get description;@JsonKey(name: 'is_demo') bool get isDemo;
+ String get id; String get name;@JsonKey(name: 'logo_url') String get logoUrl; String get location; String? get description;@JsonKey(name: 'website_url') String? get websiteUrl;@JsonKey(name: 'performer_url') String? get performerUrl; String get state; String? get date; String? get time;@JsonKey(name: 'is_demo') bool get isDemo;
 /// Create a copy of Conference
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ConferenceCopyWith<Conference> get copyWith => _$ConferenceCopyWithImpl<Confere
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Conference&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.location, location) || other.location == location)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.description, description) || other.description == description)&&(identical(other.isDemo, isDemo) || other.isDemo == isDemo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Conference&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.location, location) || other.location == location)&&(identical(other.description, description) || other.description == description)&&(identical(other.websiteUrl, websiteUrl) || other.websiteUrl == websiteUrl)&&(identical(other.performerUrl, performerUrl) || other.performerUrl == performerUrl)&&(identical(other.state, state) || other.state == state)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.isDemo, isDemo) || other.isDemo == isDemo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,logoUrl,location,startDate,endDate,description,isDemo);
+int get hashCode => Object.hash(runtimeType,id,name,logoUrl,location,description,websiteUrl,performerUrl,state,date,time,isDemo);
 
 @override
 String toString() {
-  return 'Conference(id: $id, name: $name, logoUrl: $logoUrl, location: $location, startDate: $startDate, endDate: $endDate, description: $description, isDemo: $isDemo)';
+  return 'Conference(id: $id, name: $name, logoUrl: $logoUrl, location: $location, description: $description, websiteUrl: $websiteUrl, performerUrl: $performerUrl, state: $state, date: $date, time: $time, isDemo: $isDemo)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ConferenceCopyWith<$Res>  {
   factory $ConferenceCopyWith(Conference value, $Res Function(Conference) _then) = _$ConferenceCopyWithImpl;
 @useResult
 $Res call({
- String id, String name,@JsonKey(name: 'logo_url') String logoUrl, String location, DateTime startDate, DateTime endDate, String? description,@JsonKey(name: 'is_demo') bool isDemo
+ String id, String name,@JsonKey(name: 'logo_url') String logoUrl, String location, String? description,@JsonKey(name: 'website_url') String? websiteUrl,@JsonKey(name: 'performer_url') String? performerUrl, String state, String? date, String? time,@JsonKey(name: 'is_demo') bool isDemo
 });
 
 
@@ -65,15 +65,18 @@ class _$ConferenceCopyWithImpl<$Res>
 
 /// Create a copy of Conference
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? logoUrl = null,Object? location = null,Object? startDate = null,Object? endDate = null,Object? description = freezed,Object? isDemo = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? logoUrl = null,Object? location = null,Object? description = freezed,Object? websiteUrl = freezed,Object? performerUrl = freezed,Object? state = null,Object? date = freezed,Object? time = freezed,Object? isDemo = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,logoUrl: null == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as String,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
-as DateTime,endDate: null == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
-as DateTime,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,websiteUrl: freezed == websiteUrl ? _self.websiteUrl : websiteUrl // ignore: cast_nullable_to_non_nullable
+as String?,performerUrl: freezed == performerUrl ? _self.performerUrl : performerUrl // ignore: cast_nullable_to_non_nullable
+as String?,state: null == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
+as String,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String?,time: freezed == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
 as String?,isDemo: null == isDemo ? _self.isDemo : isDemo // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -160,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'logo_url')  String logoUrl,  String location,  DateTime startDate,  DateTime endDate,  String? description, @JsonKey(name: 'is_demo')  bool isDemo)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'logo_url')  String logoUrl,  String location,  String? description, @JsonKey(name: 'website_url')  String? websiteUrl, @JsonKey(name: 'performer_url')  String? performerUrl,  String state,  String? date,  String? time, @JsonKey(name: 'is_demo')  bool isDemo)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Conference() when $default != null:
-return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.startDate,_that.endDate,_that.description,_that.isDemo);case _:
+return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.description,_that.websiteUrl,_that.performerUrl,_that.state,_that.date,_that.time,_that.isDemo);case _:
   return orElse();
 
 }
@@ -181,10 +184,10 @@ return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.startDate
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'logo_url')  String logoUrl,  String location,  DateTime startDate,  DateTime endDate,  String? description, @JsonKey(name: 'is_demo')  bool isDemo)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'logo_url')  String logoUrl,  String location,  String? description, @JsonKey(name: 'website_url')  String? websiteUrl, @JsonKey(name: 'performer_url')  String? performerUrl,  String state,  String? date,  String? time, @JsonKey(name: 'is_demo')  bool isDemo)  $default,) {final _that = this;
 switch (_that) {
 case _Conference():
-return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.startDate,_that.endDate,_that.description,_that.isDemo);case _:
+return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.description,_that.websiteUrl,_that.performerUrl,_that.state,_that.date,_that.time,_that.isDemo);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +204,10 @@ return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.startDate
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name, @JsonKey(name: 'logo_url')  String logoUrl,  String location,  DateTime startDate,  DateTime endDate,  String? description, @JsonKey(name: 'is_demo')  bool isDemo)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name, @JsonKey(name: 'logo_url')  String logoUrl,  String location,  String? description, @JsonKey(name: 'website_url')  String? websiteUrl, @JsonKey(name: 'performer_url')  String? performerUrl,  String state,  String? date,  String? time, @JsonKey(name: 'is_demo')  bool isDemo)?  $default,) {final _that = this;
 switch (_that) {
 case _Conference() when $default != null:
-return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.startDate,_that.endDate,_that.description,_that.isDemo);case _:
+return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.description,_that.websiteUrl,_that.performerUrl,_that.state,_that.date,_that.time,_that.isDemo);case _:
   return null;
 
 }
@@ -216,16 +219,19 @@ return $default(_that.id,_that.name,_that.logoUrl,_that.location,_that.startDate
 @JsonSerializable()
 
 class _Conference implements Conference {
-  const _Conference({required this.id, required this.name, @JsonKey(name: 'logo_url') required this.logoUrl, required this.location, required this.startDate, required this.endDate, this.description, @JsonKey(name: 'is_demo') this.isDemo = false});
+  const _Conference({required this.id, required this.name, @JsonKey(name: 'logo_url') required this.logoUrl, required this.location, this.description, @JsonKey(name: 'website_url') this.websiteUrl, @JsonKey(name: 'performer_url') this.performerUrl, this.state = 'Ongoing', this.date, this.time, @JsonKey(name: 'is_demo') this.isDemo = false});
   factory _Conference.fromJson(Map<String, dynamic> json) => _$ConferenceFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override@JsonKey(name: 'logo_url') final  String logoUrl;
 @override final  String location;
-@override final  DateTime startDate;
-@override final  DateTime endDate;
 @override final  String? description;
+@override@JsonKey(name: 'website_url') final  String? websiteUrl;
+@override@JsonKey(name: 'performer_url') final  String? performerUrl;
+@override@JsonKey() final  String state;
+@override final  String? date;
+@override final  String? time;
 @override@JsonKey(name: 'is_demo') final  bool isDemo;
 
 /// Create a copy of Conference
@@ -241,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Conference&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.location, location) || other.location == location)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.description, description) || other.description == description)&&(identical(other.isDemo, isDemo) || other.isDemo == isDemo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Conference&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.location, location) || other.location == location)&&(identical(other.description, description) || other.description == description)&&(identical(other.websiteUrl, websiteUrl) || other.websiteUrl == websiteUrl)&&(identical(other.performerUrl, performerUrl) || other.performerUrl == performerUrl)&&(identical(other.state, state) || other.state == state)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.isDemo, isDemo) || other.isDemo == isDemo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,logoUrl,location,startDate,endDate,description,isDemo);
+int get hashCode => Object.hash(runtimeType,id,name,logoUrl,location,description,websiteUrl,performerUrl,state,date,time,isDemo);
 
 @override
 String toString() {
-  return 'Conference(id: $id, name: $name, logoUrl: $logoUrl, location: $location, startDate: $startDate, endDate: $endDate, description: $description, isDemo: $isDemo)';
+  return 'Conference(id: $id, name: $name, logoUrl: $logoUrl, location: $location, description: $description, websiteUrl: $websiteUrl, performerUrl: $performerUrl, state: $state, date: $date, time: $time, isDemo: $isDemo)';
 }
 
 
@@ -261,7 +267,7 @@ abstract mixin class _$ConferenceCopyWith<$Res> implements $ConferenceCopyWith<$
   factory _$ConferenceCopyWith(_Conference value, $Res Function(_Conference) _then) = __$ConferenceCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name,@JsonKey(name: 'logo_url') String logoUrl, String location, DateTime startDate, DateTime endDate, String? description,@JsonKey(name: 'is_demo') bool isDemo
+ String id, String name,@JsonKey(name: 'logo_url') String logoUrl, String location, String? description,@JsonKey(name: 'website_url') String? websiteUrl,@JsonKey(name: 'performer_url') String? performerUrl, String state, String? date, String? time,@JsonKey(name: 'is_demo') bool isDemo
 });
 
 
@@ -278,15 +284,18 @@ class __$ConferenceCopyWithImpl<$Res>
 
 /// Create a copy of Conference
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? logoUrl = null,Object? location = null,Object? startDate = null,Object? endDate = null,Object? description = freezed,Object? isDemo = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? logoUrl = null,Object? location = null,Object? description = freezed,Object? websiteUrl = freezed,Object? performerUrl = freezed,Object? state = null,Object? date = freezed,Object? time = freezed,Object? isDemo = null,}) {
   return _then(_Conference(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,logoUrl: null == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as String,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
-as DateTime,endDate: null == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
-as DateTime,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,websiteUrl: freezed == websiteUrl ? _self.websiteUrl : websiteUrl // ignore: cast_nullable_to_non_nullable
+as String?,performerUrl: freezed == performerUrl ? _self.performerUrl : performerUrl // ignore: cast_nullable_to_non_nullable
+as String?,state: null == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
+as String,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String?,time: freezed == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
 as String?,isDemo: null == isDemo ? _self.isDemo : isDemo // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

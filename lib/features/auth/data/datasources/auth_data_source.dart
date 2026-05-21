@@ -8,6 +8,11 @@ import '../../domain/entities/user.dart';
 /// Data source for authentication.
 abstract class AuthDataSource {
   Future<User?> signInWithGoogle();
+  Future<User?> signInWithEmail(
+    String email,
+    String password,
+    String conferenceId,
+  );
   Future<void> signOut();
   Future<User?> getCurrentUser();
 }
@@ -24,13 +29,17 @@ class AuthDataSourceImpl implements AuthDataSource {
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
     if (googleUser == null) return null;
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
     // Send the idToken to your server for verification and session creation
-    final response = await _apiClient.post('/auth/google-signin', data: {
-      'idToken': googleAuth.idToken,
-      'accessToken': googleAuth.accessToken,
-    });
+    final response = await _apiClient.post(
+      'auth/google-signin',
+      data: {
+        'idToken': googleAuth.idToken,
+        'accessToken': googleAuth.accessToken,
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = response.data;
@@ -45,6 +54,33 @@ class AuthDataSourceImpl implements AuthDataSource {
       return user;
     } else {
       throw Exception('Server authentication failed');
+    }
+  }
+
+  @override
+  Future<User?> signInWithEmail(
+    String email,
+    String password,
+    String conferenceId,
+  ) async {
+    final response = await _apiClient.post(
+      'conferences/$conferenceId/login',
+      data: {'email': email, 'password': password},
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = response.data;
+      final user = User.fromJson(data['user']);
+      final token = data['token'] as String;
+
+      // Persist locally
+      await PrefData.setAuthToken(token);
+      await PrefData.setUser(jsonEncode(user.toJson()));
+      await PrefData.setIsSignIn(true);
+
+      return user;
+    } else {
+      throw Exception('Login failed with status: ${response.statusCode}');
     }
   }
 

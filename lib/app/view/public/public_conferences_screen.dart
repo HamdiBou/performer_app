@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_login/features/conferences/presentation/bloc/conference_bloc.dart';
 import '../../controller/conference_controller.dart';
 import '../widgets/state_filter_tabs.dart';
 import '../widgets/conference_card.dart';
@@ -15,15 +17,34 @@ class PublicConferencesScreen extends StatelessWidget {
   final ConferenceController controller = Get.put(ConferenceController());
 
   Future<void> _navigateToDemoConference(BuildContext context) async {
-    final demoConference = await ConferenceController.loadDemoConference();
-    if (!context.mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            ConferenceDescriptionScreen(conference: demoConference),
-      ),
-    );
+    try {
+      final demoConference = await ConferenceController.loadDemoConference();
+      if (!context.mounted) return;
+
+      context.read<ConferenceBloc>().add(
+        ConferenceEvent.selectConference(demoConference.toEntity()),
+      );
+
+      try {
+        await context
+            .read<ConferenceBloc>()
+            .stream
+            .firstWhere(
+              (state) => state is ConferenceLoaded && state.selected != null,
+            )
+            .timeout(const Duration(seconds: 2));
+      } catch (e) {
+        // timeout
+      }
+
+      if (!context.mounted) return;
+      context.go('/');
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Demo conference not available: $e")),
+      );
+    }
   }
 
   @override

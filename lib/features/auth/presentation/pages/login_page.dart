@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: getToolBar(
           () => context.go('/public'),
-          title: getSvgImage("event_logo.svg", width: 72.h, height: 35.h),
+          title: getSvgImage("performer_events.svg", width: 72.h, height: 35.h),
         ),
         body: SafeArea(
           child: BlocListener<AuthBloc, AuthState>(

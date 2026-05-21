@@ -45,7 +45,7 @@ class CertificateSection extends StatelessWidget {
             conference = confState.selected;
           }
 
-          if (user == null || conference == null) {
+          if (conference == null || (user == null && !conference.isDemo)) {
             return const Center(
               child: Text("Please login and select a conference"),
             );
@@ -83,18 +83,23 @@ class CertificateSection extends StatelessWidget {
                   )
                 else
                   ElevatedButton(
-                    onPressed: () {
-                      context.read<CertificateBloc>().add(
-                        GenerateCertificate(
-                          userId: user!.id,
-                          userName: user!.displayName,
-                          conferenceId: conference!.id,
-                          conferenceName: conference!.name,
-                        ),
-                      );
-                    },
-
-                    child: const Text("Generate Certificate"),
+                    onPressed: user == null
+                        ? null
+                        : () {
+                            context.read<CertificateBloc>().add(
+                              GenerateCertificate(
+                                userId: user!.id,
+                                userName: user!.displayName,
+                                conferenceId: conference!.id,
+                                conferenceName: conference!.name,
+                              ),
+                            );
+                          },
+                    child: Text(
+                      user == null
+                          ? "Login to Generate Certificate"
+                          : "Generate Certificate",
+                    ),
                   ),
               ],
             ),

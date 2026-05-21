@@ -11,6 +11,7 @@ class PrefData {
   static String baseUrlKey = "${prefName}baseUrl";
   static String selectedConferenceIdKey = "${prefName}selectedConferenceId";
   static String selectedConferenceNameKey = "${prefName}selectedConferenceName";
+  static String conferencesKey = "${prefName}conferences";
   static String authTokenKey = "${prefName}authToken";
   static String userKey = "${prefName}user";
 
@@ -101,5 +102,15 @@ class PrefData {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(selectedConferenceIdKey);
     await prefs.remove(selectedConferenceNameKey);
+  }
+
+  static Future<void> saveConferences(String conferencesJson) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(conferencesKey, conferencesJson);
+  }
+
+  static Future<String?> getConferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(conferencesKey);
   }
 }

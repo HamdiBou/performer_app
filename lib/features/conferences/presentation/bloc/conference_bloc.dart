@@ -67,9 +67,15 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
     await result.fold(
       (failure) async => emit(ConferenceState.error(failure.message)),
       (_) async {
+        List<Conference> currentList = [];
+        if (state is ConferenceLoaded) {
+          currentList = (state as ConferenceLoaded).conferences;
+        }
+
         final conferencesResult = await _conferenceRepository.getConferences();
         conferencesResult.fold(
-          (failure) => emit(ConferenceState.error(failure.message)),
+          (failure) =>
+              emit(ConferenceState.loaded(currentList, event.conference)),
           (conferences) =>
               emit(ConferenceState.loaded(conferences, event.conference)),
         );
@@ -101,9 +107,14 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
     await result.fold(
       (failure) async => emit(ConferenceState.error(failure.message)),
       (_) async {
+        List<Conference> currentList = [];
+        if (state is ConferenceLoaded) {
+          currentList = (state as ConferenceLoaded).conferences;
+        }
+
         final conferencesResult = await _conferenceRepository.getConferences();
         conferencesResult.fold(
-          (failure) => emit(ConferenceState.error(failure.message)),
+          (failure) => emit(ConferenceState.loaded(currentList, null)),
           (conferences) => emit(ConferenceState.loaded(conferences, null)),
         );
       },

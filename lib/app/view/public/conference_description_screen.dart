@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_login/features/conferences/presentation/bloc/conference_bloc.dart';
 import 'package:test_login/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:test_login/features/conferences/domain/entities/conference.dart';
 import '../../controller/conference_controller.dart';
 import '../../../base/color_data.dart';
 import '../../../base/pref_data.dart';
 import '../../../base/widget_utils.dart';
-import '../../../base/constant.dart';
-import '../../../app/routes/app_routes.dart';
-import '../../../app/data/api_config.dart';
 
 class ConferenceDescriptionScreen extends StatelessWidget {
   final ConferenceModel conference;
@@ -26,9 +21,18 @@ class ConferenceDescriptionScreen extends StatelessWidget {
         ConferenceEvent.selectConference(conference.toEntity()),
       );
 
-      await context.read<ConferenceBloc>().stream.firstWhere(
-        (state) => state is ConferenceLoaded && state.selected != null,
-      );
+      // Avoid hanging if the bloc fails to emit Loaded state
+      try {
+        await context
+            .read<ConferenceBloc>()
+            .stream
+            .firstWhere(
+              (state) => state is ConferenceLoaded && state.selected != null,
+            )
+            .timeout(const Duration(seconds: 2));
+      } catch (e) {
+        // If it times out or errors, we still want to try to go home for demo
+      }
 
       if (!context.mounted) return;
       context.go('/');

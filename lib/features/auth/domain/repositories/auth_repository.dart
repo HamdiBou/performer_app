@@ -6,6 +6,13 @@ abstract class AuthRepository {
   /// Signs in a user with Google.
   Future<Either<Failure, User>> signInWithGoogle();
 
+  /// Signs in a user with email and password for a specific conference.
+  Future<Either<Failure, User>> signInWithEmail(
+    String email,
+    String password,
+    String conferenceId,
+  );
+
   /// Signs out the current user.
   Future<Either<Failure, void>> signOut();
 

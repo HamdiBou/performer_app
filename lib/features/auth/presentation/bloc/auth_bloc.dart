@@ -10,6 +10,11 @@ part 'auth_bloc.freezed.dart';
 abstract class AuthEvent with _$AuthEvent {
   const factory AuthEvent.appStarted() = AppStarted;
   const factory AuthEvent.signInWithGoogle() = SignInWithGoogle;
+  const factory AuthEvent.signInWithEmail({
+    required String email,
+    required String password,
+    required String conferenceId,
+  }) = SignInWithEmail;
   const factory AuthEvent.signOut() = SignOut;
 }
 
@@ -29,6 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._authRepository) : super(const AuthState.initial()) {
     on<AppStarted>(_onAppStarted);
     on<SignInWithGoogle>(_onSignInWithGoogle);
+    on<SignInWithEmail>(_onSignInWithEmail);
     on<SignOut>(_onSignOut);
   }
 
@@ -36,8 +42,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await _authRepository.getCurrentUser();
     result.fold(
       (failure) => emit(const AuthState.unauthenticated()),
-      (user) =>
-          user != null ? emit(AuthState.authenticated(user)) : emit(const AuthState.unauthenticated()),
+      (user) => user != null
+          ? emit(AuthState.authenticated(user))
+          : emit(const AuthState.unauthenticated()),
     );
   }
 
@@ -47,6 +54,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthState.loading());
     final result = await _authRepository.signInWithGoogle();
+    result.fold(
+      (failure) => emit(AuthState.error(failure.message)),
+      (user) => emit(AuthState.authenticated(user)),
+    );
+  }
+
+  Future<void> _onSignInWithEmail(
+    SignInWithEmail event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+    final result = await _authRepository.signInWithEmail(
+      event.email,
+      event.password,
+      event.conferenceId,
+    );
     result.fold(
       (failure) => emit(AuthState.error(failure.message)),
       (user) => emit(AuthState.authenticated(user)),
