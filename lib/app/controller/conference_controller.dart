@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import '../../../base/pref_data.dart';
 import '../../../../features/conferences/domain/entities/conference.dart';
 import '../../../../features/conferences/domain/repositories/conference_repository.dart';
+import '../../../../features/sessions/domain/entities/session.dart';
+import '../../../../features/speakers/domain/entities/speaker.dart';
+import '../../../../features/sponsors/domain/entities/sponsor.dart';
 import 'package:test_login/core/di/injection.dart';
 import 'dart:convert';
 
@@ -19,6 +22,9 @@ class ConferenceModel {
   final String time;
   final String location;
   final bool isDemo;
+  final List<Session>? sessions;
+  final List<Speaker>? speakers;
+  final List<Sponsor>? sponsors;
 
   ConferenceModel({
     required this.id,
@@ -32,6 +38,9 @@ class ConferenceModel {
     required this.time,
     required this.location,
     this.isDemo = false,
+    this.sessions,
+    this.speakers,
+    this.sponsors,
   });
 
   factory ConferenceModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +56,15 @@ class ConferenceModel {
       time: json['time'] ?? 'TBD',
       location: json['location'] ?? 'TBD',
       isDemo: json['is_demo'] ?? false,
+      sessions: json['sessions'] != null
+          ? (json['sessions'] as List).map((i) => Session.fromJson(i)).toList()
+          : null,
+      speakers: json['speakers'] != null
+          ? (json['speakers'] as List).map((i) => Speaker.fromJson(i)).toList()
+          : null,
+      sponsors: json['sponsors'] != null
+          ? (json['sponsors'] as List).map((i) => Sponsor.fromJson(i)).toList()
+          : null,
     );
   }
 
@@ -63,6 +81,9 @@ class ConferenceModel {
       date: date,
       time: time,
       isDemo: isDemo,
+      sessions: sessions,
+      speakers: speakers,
+      sponsors: sponsors,
     );
   }
 }
@@ -114,6 +135,9 @@ class ConferenceController extends GetxController {
                   time: c.time ?? 'TBD',
                   location: c.location,
                   isDemo: c.isDemo,
+                  sessions: c.sessions,
+                  speakers: c.speakers,
+                  sponsors: c.sponsors,
                 ),
               )
               .toList();

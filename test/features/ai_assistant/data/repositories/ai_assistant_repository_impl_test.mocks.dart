@@ -46,7 +46,7 @@ class MockGroqAssistantDataSource extends _i1.Mock
   @override
   _i4.Future<Map<String, dynamic>> postChatCompletion({
     required List<Map<String, String>>? messages,
-    String? model = 'llama-3.1-70b-versatile',
+    String? model = 'llama-3.1-8b-instant',
   }) =>
       (super.noSuchMethod(
             Invocation.method(#postChatCompletion, [], {

@@ -18,6 +18,15 @@ _Conference _$ConferenceFromJson(Map<String, dynamic> json) => _Conference(
   date: json['date'] as String?,
   time: json['time'] as String?,
   isDemo: json['is_demo'] as bool? ?? false,
+  sessions: (json['sessions'] as List<dynamic>?)
+      ?.map((e) => Session.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  speakers: (json['speakers'] as List<dynamic>?)
+      ?.map((e) => Speaker.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  sponsors: (json['sponsors'] as List<dynamic>?)
+      ?.map((e) => Sponsor.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$ConferenceToJson(_Conference instance) =>
@@ -33,4 +42,7 @@ Map<String, dynamic> _$ConferenceToJson(_Conference instance) =>
       'date': instance.date,
       'time': instance.time,
       'is_demo': instance.isDemo,
+      'sessions': instance.sessions,
+      'speakers': instance.speakers,
+      'sponsors': instance.sponsors,
     };
