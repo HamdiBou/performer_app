@@ -8,6 +8,8 @@ class ApiConfig {
   static late String googleClientId; // Google OAuth Client ID
   static late String
   googleServerClientId; // Google OAuth Server Client ID (for Android)
+  static late String groqApiKey; // Groq API Key
+  static late String groqBaseUrl; // Groq API Base URL
 
   static Future<void> init() async {
     print('🔧 Starting API Config initialization...');
@@ -25,7 +27,14 @@ class ApiConfig {
           final parts = line.split('=');
           if (parts.length == 2) {
             final key = parts[0].trim();
-            final value = parts[1].trim();
+            var value = parts[1].trim();
+            // Remove quotes if present
+            if (value.startsWith('"') && value.endsWith('"')) {
+              value = value.substring(1, value.length - 1);
+            }
+            if (value.startsWith("'") && value.endsWith("'")) {
+              value = value.substring(1, value.length - 1);
+            }
             envVars[key] = value;
             print('   ✓ Loaded: $key = $value');
           }
@@ -48,9 +57,16 @@ class ApiConfig {
       baseUrl = envBaseUrl ?? 'http://192.168.100.212:8000/api';
       googleClientId = envGoogleClientId ?? '';
       googleServerClientId = envGoogleServerClientId ?? '';
+      groqApiKey = envVars['GROQ_API_KEY'] ?? '';
+      groqBaseUrl =
+          envVars['GROQ_BASE_URL'] ?? 'https://api.groq.com/openai/v1';
 
       print('✅ API Config Initialized');
       print('📍 Base URL: $baseUrl');
+      print(
+        '🔑 Groq API Key loaded: ${groqApiKey.isNotEmpty ? "✅ Yes (${groqApiKey.substring(0, 10)}...)" : "❌ No"}',
+      );
+      print('🌐 Groq Base URL: $groqBaseUrl');
 
       // Initialize conferenceUrl to be same as baseUrl by default
       conferenceUrl = baseUrl;

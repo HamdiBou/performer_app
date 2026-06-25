@@ -16,6 +16,14 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:test_login/core/di/injection.dart' as _i78;
 import 'package:test_login/core/network/api_client.dart' as _i92;
 import 'package:test_login/core/routing/app_router.dart' as _i707;
+import 'package:test_login/features/ai_assistant/data/datasources/groq_assistant_data_source.dart'
+    as _i19;
+import 'package:test_login/features/ai_assistant/data/repositories/ai_assistant_repository_impl.dart'
+    as _i55;
+import 'package:test_login/features/ai_assistant/domain/repositories/ai_assistant_repository.dart'
+    as _i385;
+import 'package:test_login/features/ai_assistant/presentation/bloc/ai_assistant_bloc.dart'
+    as _i256;
 import 'package:test_login/features/auth/data/datasources/auth_data_source.dart'
     as _i706;
 import 'package:test_login/features/auth/data/repositories/auth_repository_impl.dart'
@@ -60,6 +68,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i95.CertificateRepositoryImpl(),
     );
     gh.lazySingleton<_i92.ApiClient>(() => _i92.ApiClient(gh<_i361.Dio>()));
+    gh.lazySingleton<_i19.GroqAssistantDataSource>(
+      () => _i19.GroqAssistantDataSource(gh<_i361.Dio>()),
+    );
     gh.factory<_i561.ShellBloc>(
       () => _i561.ShellBloc(gh<_i309.ConferenceShellRepository>()),
     );
@@ -75,6 +86,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i92.ApiClient>(),
       ),
     );
+    gh.lazySingleton<_i385.AiAssistantRepository>(
+      () => _i55.AiAssistantRepositoryImpl(
+        gh<_i19.GroqAssistantDataSource>(),
+        gh<_i231.ConferenceRepository>(),
+      ),
+    );
     gh.lazySingleton<_i526.AuthRepository>(
       () => _i189.AuthRepositoryImpl(gh<_i706.AuthDataSource>()),
     );
@@ -83,6 +100,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i691.ConferenceBloc>(
       () => _i691.ConferenceBloc(gh<_i231.ConferenceRepository>()),
+    );
+    gh.factory<_i256.AiAssistantBloc>(
+      () => _i256.AiAssistantBloc(gh<_i385.AiAssistantRepository>()),
     );
     gh.lazySingleton<_i707.AppRouter>(
       () => _i707.AppRouter(gh<_i685.AuthBloc>(), gh<_i691.ConferenceBloc>()),

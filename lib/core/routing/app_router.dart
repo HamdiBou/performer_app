@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_login/core/di/injection.dart';
 import 'package:test_login/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:test_login/features/auth/presentation/pages/login_page.dart';
 import 'package:test_login/features/conferences/presentation/bloc/conference_bloc.dart';
@@ -9,6 +10,8 @@ import 'package:test_login/features/conferences/domain/entities/conference.dart'
 import 'package:test_login/features/conferences/presentation/pages/select_conference_page.dart';
 import 'package:test_login/features/conference_shell/presentation/pages/conference_shell_page.dart';
 import 'package:test_login/app/view/public/public_conferences_screen.dart';
+import 'package:test_login/features/ai_assistant/presentation/bloc/ai_assistant_bloc.dart';
+import 'package:test_login/features/ai_assistant/presentation/pages/ai_assistant_screen.dart';
 
 @lazySingleton
 class AppRouter {
@@ -86,6 +89,13 @@ class AppRouter {
       GoRoute(
         path: '/',
         builder: (context, state) => const ConferenceShellPage(),
+      ),
+      GoRoute(
+        path: '/ai-assistant',
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<AiAssistantBloc>(),
+          child: const AiAssistantScreen(),
+        ),
       ),
     ],
   );

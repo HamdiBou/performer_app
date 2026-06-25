@@ -109,6 +109,11 @@ class _ConferenceShellPageState extends State<ConferenceShellPage> {
       ),
       body: _buildDynamicContent(config),
       bottomNavigationBar: _buildBottomNav(context, config, primaryColor),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/ai-assistant'),
+        backgroundColor: primaryColor,
+        child: const Icon(Icons.smart_toy, color: Colors.white),
+      ),
     );
   }
 
