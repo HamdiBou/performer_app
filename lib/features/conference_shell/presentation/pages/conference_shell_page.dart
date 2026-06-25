@@ -7,7 +7,6 @@ import 'package:test_login/base/widget_utils.dart';
 import 'package:test_login/features/conference_shell/presentation/bloc/shell_bloc.dart';
 import 'package:test_login/features/conference_shell/domain/entities/conference_shell_config.dart';
 import 'package:test_login/features/conferences/presentation/bloc/conference_bloc.dart';
-import 'package:test_login/features/auth/presentation/bloc/auth_bloc.dart';
 import 'sections/schedule_section.dart';
 import 'sections/speakers_section.dart';
 import 'sections/attendees_section.dart';
@@ -53,7 +52,7 @@ class _ConferenceShellPageState extends State<ConferenceShellPage> {
                     error: (message) =>
                         Scaffold(body: Center(child: Text(message))),
                     loaded: (config) =>
-                        _buildShell(context, config, selected.name),
+                        _buildShell(context, config, selected.name, selected.logoUrl),
                     orElse: () => const Scaffold(
                       body: Center(child: Text('Initializing shell...')),
                     ),
@@ -73,31 +72,54 @@ class _ConferenceShellPageState extends State<ConferenceShellPage> {
     BuildContext context,
     ConferenceShellConfig config,
     String conferenceName,
+    String logoUrl,
   ) {
     final Color primaryColor = Color(
       int.parse(config.primaryColorHex.replaceFirst('#', '0xff')),
     );
 
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        toolbarHeight: 70.h,
         leading: Padding(
-          padding: EdgeInsets.all(8.h),
-          child: getSvgImage("splash_logo.png", width: 40.h, height: 40.h),
-        ),
-        title: Text(
-          conferenceName,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.bold,
+          padding: EdgeInsets.all(12.h),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.h),
+              boxShadow: [
+                BoxShadow(
+                  color: shadowColor,
+                  offset: const Offset(0, 2),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.h),
+              child: Image.network(
+                logoUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    getSvgImage("splash_logo.png", width: 30.h, height: 30.h),
+              ),
+            ),
           ),
+        ),
+        title: getCustomFont(
+          conferenceName,
+          18.sp,
+          Colors.black,
+          1,
+          fontWeight: FontWeight.w800,
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.black),
+            icon: Icon(Icons.logout_rounded, color: Colors.black, size: 24.h),
             onPressed: () {
               context.read<ConferenceBloc>().add(
                 const ConferenceEvent.clearSelectedConference(),
@@ -105,26 +127,41 @@ class _ConferenceShellPageState extends State<ConferenceShellPage> {
               context.go('/public');
             },
           ),
+          getHorSpace(8.w),
         ],
       ),
-      body: _buildDynamicContent(config),
+      body: Column(
+        children: [
+          Container(
+            height: 1.h,
+            color: dividerColor,
+          ),
+          Expanded(child: _buildDynamicContent(config)),
+        ],
+      ),
       bottomNavigationBar: _buildBottomNav(context, config, primaryColor),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/ai-assistant'),
         backgroundColor: primaryColor,
-        child: const Icon(Icons.smart_toy, color: Colors.white),
+        icon: const Icon(Icons.smart_toy_rounded, color: Colors.white),
+        label: getCustomFont("Ask AI", 14.sp, Colors.white, 1, fontWeight: FontWeight.w700),
       ),
     );
   }
 
   Widget _buildDynamicContent(ConferenceShellConfig config) {
     if (config.enabledSections.isEmpty) {
-      return const Center(
-        child: Text("No sections enabled for this conference."),
+      return Center(
+        child: getCustomFont(
+          "No sections enabled for this conference.",
+          16.sp,
+          greyColor,
+          1,
+          fontWeight: FontWeight.w500,
+        ),
       );
     }
 
-    // Ensure index is within bounds if config changes
     if (_selectedIndex >= config.enabledSections.length) {
       _selectedIndex = 0;
     }
@@ -154,41 +191,68 @@ class _ConferenceShellPageState extends State<ConferenceShellPage> {
   ) {
     if (config.enabledSections.isEmpty) return const SizedBox.shrink();
 
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: _selectedIndex >= config.enabledSections.length
-          ? 0
-          : _selectedIndex,
-      selectedItemColor: primaryColor,
-      unselectedItemColor: Colors.grey,
-      onTap: (index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      items: config.enabledSections.map((section) {
-        return BottomNavigationBarItem(
-          icon: Icon(_getSectionIcon(section)),
-          label: _getSectionLabel(section),
-        );
-      }).toList(),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            offset: const Offset(0, -2),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex >= config.enabledSections.length
+            ? 0
+            : _selectedIndex,
+        selectedItemColor: primaryColor,
+        unselectedItemColor: greyColor,
+        selectedLabelStyle: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Gilroy',
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Gilroy',
+        ),
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: config.enabledSections.map((section) {
+          return BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(bottom: 4.h),
+              child: Icon(_getSectionIcon(section)),
+            ),
+            label: _getSectionLabel(section),
+          );
+        }).toList(),
+      ),
     );
   }
 
   IconData _getSectionIcon(ShellSection section) {
     switch (section) {
       case ShellSection.schedule:
-        return Icons.calendar_today;
+        return Icons.calendar_month_rounded;
       case ShellSection.speakers:
-        return Icons.people;
+        return Icons.record_voice_over_rounded;
       case ShellSection.attendees:
-        return Icons.group;
+        return Icons.groups_rounded;
       case ShellSection.sponsors:
-        return Icons.business;
+        return Icons.handshake_rounded;
       case ShellSection.certificate:
-        return Icons.card_membership;
+        return Icons.workspace_premium_rounded;
       case ShellSection.announcements:
-        return Icons.campaign;
+        return Icons.newspaper_rounded;
     }
   }
 
@@ -203,7 +267,7 @@ class _ConferenceShellPageState extends State<ConferenceShellPage> {
       case ShellSection.sponsors:
         return 'Sponsors';
       case ShellSection.certificate:
-        return 'Certificate';
+        return 'Pass';
       case ShellSection.announcements:
         return 'Feed';
     }
